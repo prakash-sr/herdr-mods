@@ -55,32 +55,33 @@ With one account per vendor there is nothing to set. Optional props:
 
 ## Layout toggle
 
-A button that shows or hides one part of your layout: a side panel, a second sidebar, a bar. It is lit while that part is shown.
+Buttons that show or hide any part of your layout: a side panel, a sidebar, a card, a bar. Each is lit while its part is shown. You pick the parts from a list; there is no file to edit.
 
 ![Layout toggle](layout-toggle/preview.png)
 
-*"Pull requests" at the right of the tab bar, toggling a panel beside the terminals.*
+*The settings, and "Pull requests" at the right of the tab bar with the `+` that opens them.*
 
 Herdr's tab bar has buttons for its own Files and Changes panels. A panel another mod adds has no button, only a key if you bind one. This gives it one.
 
-- **Any node.** It runs `layout.toggle` on the id you give it, so it works for any block, row or column.
-- **Shows the state.** Lit while the node is shown, muted while hidden.
-- **Place it anywhere.** One button a block; put several in a row.
+- **Pick from a list.** The `+` at the end of the buttons opens the settings: every part of the layout is listed with what it holds and whether it is hidden. A click adds a button for it.
+- **Rename and remove.** Click a button's name in the settings to rename it; the `✕` removes it.
+- **Shows the state.** Lit while the part is shown, muted while hidden, also when a key or another mod toggled it.
+- **Any part.** It runs Herdr's `layout.toggle` on the part's id, so it works for a block, a row or a column.
+- **Fits itself.** The block is as wide as its buttons.
 
 ```sh
+git clone https://github.com/prakash-sr/herdr-mods
 cp -R herdr-mods/layout-toggle/mods/layout-toggle ~/.config/herdr-app/mods/
+herdr-app do mod.open --name layout-toggle
 ```
 
-For a button at the right end of the tab bar, replace the `tabs` block of your own layout with a row:
+The last line opens the settings. **Add the buttons to the tab bar** puts the block at the right end of the tab bar's row, then pick the parts you want buttons for. Herdr's own layouts are read-only, so do this on a layout of your own (`herdr-app do layout.clone '{"name":"main","as":"mine"}'`).
+
+To place the block yourself, anywhere in a layout:
 
 ```json
-{ "id": "tabs-row", "type": "row", "size": { "px": 42 }, "resizable": false, "children": [
-  { "id": "tabs", "type": "block", "size": { "weight": 1 }, "content": { "mod": "tabs" } },
-  { "id": "pr-toggle", "type": "block", "size": { "px": 118 },
-    "content": { "mod": "layout-toggle", "props": { "id": "pr-flow", "label": "Pull requests" } } } ] }
+{ "id": "layout-toggle", "type": "block", "size": { "px": 60 }, "content": { "mod": "layout-toggle" } }
 ```
-
-`id` is the layout node to toggle, `label` the button's text.
 
 ## License
 
