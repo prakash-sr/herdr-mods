@@ -69,6 +69,8 @@ const left = (sec) => (sec >= 86400 ? `${Math.floor(sec / 86400)}d ${Math.floor(
 
 const find = (node, pred) => (!node ? null : pred(node) ? node : (node.children || []).map((c) => find(c, pred)).find(Boolean));
 
+const narrow = () => (find(layout(), (n) => n.id === "sidebar")?.size?.px ?? Infinity) < 160; // the sidebar's rail, as Herdr's own mods tell it
+
 export default class UsageCard extends View {
   init(_props, cx) {
     this.rev = -1;
@@ -129,7 +131,7 @@ export default class UsageCard extends View {
 
   // Keeps the block as tall as the card, as machine-pulse does.
   fit(list) {
-    const want = list.length ? 21 + list.reduce((h, p) => h + 17 + (auth.who[p.id] ? 19 : 0) + 22 * Math.max(1, p.windows.length), 0) + 10 * (list.length - 1) : 44;
+    const want = narrow() ? 17 + list.reduce((h, p) => h + 15 * (1 + p.windows.length), 0) + 6 * Math.max(0, list.length - 1) : list.length ? 21 + list.reduce((h, p) => h + 17 + (auth.who[p.id] ? 19 : 0) + 22 * Math.max(1, p.windows.length), 0) + 10 * (list.length - 1) : 44;
     if (want === this.want) return;
     this.want = want;
     const node = find(layout(), (n) => n.content?.mod === MOD);
@@ -144,6 +146,14 @@ export default class UsageCard extends View {
     const open = (id) => openOverlay({ mod: MOD, props: { ...props(), view: "menu", account: id }, kind: "dialog", width: 280, height: remote ? 176 : 124 });
     const tone = (p) => (p >= 90 ? t.ansi1 : p >= 75 ? t.ansi3 : t.ansi2);
     const W = 96;
+    // The sidebar folded to its rail: the vendor's initial and each limit's percent, the rest in the tooltip.
+    if (narrow()) {
+      return v_flex().size_full().bg(t.chrome).border_t(1).border_color(t.border).py(8).gap(6).text_size(10.5)
+        .children(list.map((p) => v_flex().id(`account-${p.id}`).items_center().on_click(() => vendor(p.id).login && open(p.id))
+          .tooltip(`${nameOf(p.id)}${p.windows.map((w) => `\n${w.long ?? w.short ?? ""} ${Math.round(w.percent)}%${w.resetsAt ? `, resets in ${left(w.resetsAt - now)}` : ""}`).join("")}`)
+          .child(div().h(15).font_semibold().text_color(t.foreground).child([...nameOf(p.id)][0] ?? "?"))
+          .children(p.windows.map((w) => div().h(15).text_color(tone(w.percent)).child(`${Math.round(w.percent)}%`)))));
+    }
     // A vendor we know how to sign in to gets a clickable name; the others a plain one.
     const title = (p) => (vendor(p.id).login
       ? h_flex().id(`account-${p.id}`).gap(5).items_center().rounded(4).hover((s) => s.bg(t.hover)).on_click(() => open(p.id))
