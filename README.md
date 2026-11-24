@@ -6,7 +6,7 @@ They are unofficial and not affiliated with Herdr. See also [Machine Pulse](http
 
 ## Usage card
 
-Your plan limits as a card that stays in the sidebar, for the account you are signed in to: one row a limit with a bar, the percent used and the time to reset. A click on the account lets you switch to another one.
+Your plan limits as a card that stays in the sidebar, for the account you are signed in to: one row a limit with a bar, the percent used and the time to reset. A click on a vendor lets you switch account.
 
 ![Usage card](usage-card/preview.png)
 
@@ -17,13 +17,14 @@ It is a companion to [usage-limits](https://github.com/nozikov/herdr-usage-limit
 What it adds:
 
 - **Always visible.** No hover: 5-hour, weekly and per-model limits for Claude Code, Codex and the other providers usage-limits knows, in the sidebar.
-- **Whose limits they are.** The card names the account Claude Code is signed in to (its email, from `claude auth status`), so the numbers are never mistaken for another account's.
-- **Switch account from the card.** A click on the account opens a two-line menu. **Switch account…** opens Claude's own sign-in (`claude auth login`) in a new tab. When the space you are in runs on another machine, a second entry does the same there. After you sign in, the card shows the new account and asks usage-limits for fresh numbers.
+- **Whose limits they are.** Under each vendor the card says who is signed in: the email for Claude Code, the vendor's own status line for Codex.
+- **Switch account from the card, for any vendor.** A click on the vendor opens a two-line menu. **Switch account…** opens the vendor's own sign-in in a new tab (`claude auth login`, `codex login`, `opencode auth login`). When the space you are in runs on another machine, a second entry does the same there. After you sign in, the card shows the new account and asks usage-limits for fresh numbers.
+- **Add your own vendor.** Tell the card a status command and a sign-in command and any CLI gets the same line and menu.
 - **A pace mark on every bar.** The thin line is where the bar would be if you used the limit evenly until it resets, so one look says whether you are ahead of pace.
-- **Almost no cost of its own.** The limits come from what usage-limits already publishes in Herdr's shared state. The card itself only runs `claude auth status` every 5 minutes. It makes no request and reads no file.
+- **Almost no cost of its own.** The limits come from what usage-limits already publishes in Herdr's shared state. The card itself only runs each vendor's status command every 5 minutes. It makes no request and reads no credential file.
 - **Sizes itself.** The block grows and shrinks with the limits shown.
 
-Good to know: the limits are those of the account signed in **on the computer Herdr runs on**, because that is where usage-limits asks. Switching the account on another machine changes what agents there use, not the numbers shown; the menu says so.
+Good to know: the limits are those of the account signed in **on the computer Herdr runs on**, because that is where usage-limits asks. Switching the account on another machine changes what agents there use, not the numbers shown; the menu says so. The Codex commands are the ones its CLI documents; they were not tried on a machine with Codex.
 
 Install (after usage-limits is in your layout):
 
@@ -38,11 +39,19 @@ Then add the block to the sidebar column of a layout of your own, for example ab
 { "id": "usage-card", "type": "block", "size": { "px": 82 }, "content": { "mod": "usage-card" } }
 ```
 
-With one Claude account there is nothing to set. If you gave usage-limits several (`claudeAccounts`), each gets its own group on the card; tell the card their folders so it can name who is signed in to each, and labels if you like:
+With one account per vendor there is nothing to set. Optional props:
 
 ```json
-"props": { "names": { "claude-work": "Work" }, "configDirs": { "claude-work": "~/.claude-work" } }
+"props": {
+  "names": { "claude-work": "Work" },
+  "configDirs": { "claude-work": "~/.claude-work" },
+  "vendors": { "mytool": { "name": "My Tool", "status": "mytool whoami", "login": "mytool login" } }
+}
 ```
+
+- `names`: your labels, by usage-limits' provider id.
+- `configDirs`: the folder of each extra Claude account you gave usage-limits (`claudeAccounts`), so the card can say who is signed in to it.
+- `vendors`: add a vendor, or replace a built-in one's commands. `status` prints who is signed in (JSON with `email`, or a line of text); `login` signs in.
 
 ## Layout toggle
 

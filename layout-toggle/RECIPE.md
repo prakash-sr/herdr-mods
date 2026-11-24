@@ -1,6 +1,6 @@
 # Layout toggle
 
-A button that shows or hides one node of the layout, lit while that node is shown. Put it in the tab bar's row to give another mod's side panel a button like Herdr's own Files and Changes.
+A button for any part of your layout. Herdr's tab bar has buttons only for its own Files and Changes panels; a panel another mod adds has none, just a key if you bind one. Layout toggle is one small button that shows or hides the layout node you name, and is lit while that node is shown. Put it in the tab bar's row, a status bar or a sidebar, one button a panel.
 
 ![Layout toggle](preview.png)
 
